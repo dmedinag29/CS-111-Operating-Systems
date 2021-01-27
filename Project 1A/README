@@ -1,0 +1,16 @@
+NAME: Daniel Medina Garate
+EMAIL: dmedinag@g.ucla.edu
+ID: 204971333
+
+SLIPDAYS: 2
+
+Files included in submission lab1a-204971333.tar.gz:
+
+        lab1a.c - Source code for project 1A written in C. Copies from stdin to stdout, but file descriptors are modified to be character-at-a-time and no-scho mode 		      (non-canonical input more with no echo).The source code supports the following:
+
+                --shell ... passes input/output between the terminal and a shell, uses pipes to transfer data accross two process.
+
+        Makefile - Will support the following targets:
+                default ... build lab1a executable with -Wall and -Wextra
+                clean ... reverts additions created ny Makefile
+                dist ... creates our submission tar file
