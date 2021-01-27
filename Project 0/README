@@ -1,0 +1,33 @@
+NAME: Daniel Medina Garate
+EMAIL: dmedinag@g.ucla.edu
+ID: 204971333
+
+SLIPDAYS: 3
+
+Files included in submission lab0-204971333.tar.gz:
+
+	lab0.c - Source code for porject 0 written in C. Copies from stdin to stdout if no arguments are provided. The source code supports the following:
+
+		--input=filename ... use the specified file as standard input
+		--output=filename ... create the specified file and use it as standard output
+		--segfault ... force a segmentation fault
+		--catch ... use signal(2) to register a SIGSEGV handler that catches the segmentation fault
+
+	Makefile - Will support the following targets:
+		default ... build lab0 executable with -g, -Wall, and -Wextra
+		check ... will run smoke test as described below
+		clean ... reverts additions created ny Makefile
+		dist ... creates our submission tar file
+
+	breakpoint.png - Screenshot of stack backtrace of segmentation fault
+
+	breakpoint.png - Screenshot of bad assignment and pointer inspection	
+
+	smoke_test.sh - Bash script that contains the following tests:
+		Test 1: Make sure copying is successful returning exit code 0 using --input=joe.txt --output=bruin.txt
+		Test 2: Make sure unrecognized argument returns exit code 1
+		Test 3: Make sure that exit code 2 is returned when not able to open --input=file
+		Test 4: Make sure that exit code 3 is returned when not able to open --output=file
+		Test 5: Make sure that exit code 4 is returned segment fault is caused, caught, and received SIGSEG
+		Test 6: Make sure copying is correct from stdin/stdout
+		Test 7: Make sure copying is correct using --input=joe.txt --output=bruin.txt
