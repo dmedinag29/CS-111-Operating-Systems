@@ -2,8 +2,6 @@ NAME: Daniel Medina Garate
 EMAIL: dmedinag@g.ucla.edu
 ID: 204971333
 
-SLIPDAYS: 3
-
 Files included in submission lab0-204971333.tar.gz:
 
 	lab0.c - Source code for porject 0 written in C. Copies from stdin to stdout if no arguments are provided. The source code supports the following:
