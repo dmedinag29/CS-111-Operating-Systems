@@ -1,0 +1,22 @@
+NAME: Daniel Medina Garate
+EMAIL: dmedinag@g.ucla.edu
+ID: 204971333
+
+SLIPDAYS: 1
+
+Files included in submission lab4b-204971333.tar.gz:
+
+        lab4b.c - Source code for project 4A written in C. Uses beaglebone to output a timestamp every N seconds along with the current temperature. Will output
+		  to --log=filename if specifed. The time N can be specifed using --period=N, as well as both degree units, fahrenheit (F) and Celsius (C) using
+                  the argument --scale=F (default). Input commands supported while program is running:
+			SCALE= ... changes degree units
+			PERIOD= ... changes period
+			STOP ... pauses program
+			START ... resumes program
+			LOG ... outputs any text after to file if --log is set
+			OFF ... shutdowns program
+
+         Makefile - Will support the following targets:
+                default ... build lab3a executable compiled with -Wall -Wextra --lmaa --lm -g
+                clean ... reverts additions created my Makefile
+                dist ... creates our submission tar file

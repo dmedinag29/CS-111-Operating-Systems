@@ -1,0 +1,25 @@
+NAME: Daniel Medina Garate
+EMAIL: dmedinag@g.ucla.edu
+ID: 204971333
+
+SLIPDAYS: 0
+
+S/N: BBGW20061300
+MAC: 2CF7F106C213
+
+Files included in submission tar:
+	
+	README ... thsis file
+
+	Makefile ... builds the tarball using dist
+
+	my_beaglebone.jpg ... a seflie of me holding my BeagleBone
+	
+	connected.jpg ... screenshot from USB terminal command session showing I gave it a name and configured network access
+	
+	copy.png ... screenshot from local session in which I copied a hello world program from my laptop to my Beaglebone
+	
+	build_run.png ... screenshot from WIFI SSH session in which I build and run the helloworld program
+	
+	git.png screenshot from WIFI SSH session in which I clone a repository
+	

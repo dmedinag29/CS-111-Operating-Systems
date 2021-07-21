@@ -1,0 +1,249 @@
+Total: 587 samples
+     526  89.6%  89.6%      583  99.3% thread_worker
+      12   2.0%  91.7%       12   2.0% ?? /usr/src/debug////////glibc-2.17-c758a686/string/../sysdeps/x86_64/multiarch/strcmp-sse42.S:204
+       8   1.4%  93.0%        8   1.4% ?? /usr/src/debug////////glibc-2.17-c758a686/string/../sysdeps/x86_64/multiarch/strcmp-sse42.S:1734
+       8   1.4%  94.4%        8   1.4% ?? /usr/src/debug////////glibc-2.17-c758a686/string/../sysdeps/x86_64/multiarch/strcmp-sse42.S:1734
+       6   1.0%  95.4%       38   6.5% SortedList_insert
+       5   0.9%  96.3%        5   0.9% ?? /usr/src/debug////////glibc-2.17-c758a686/string/../sysdeps/x86_64/multiarch/strcmp-sse42.S:1734
+       5   0.9%  97.1%       19   3.2% SortedList_lookup
+       4   0.7%  97.8%        4   0.7% ?? /usr/src/debug////////glibc-2.17-c758a686/string/../sysdeps/x86_64/multiarch/strcmp-sse42.S:203
+       2   0.3%  98.1%        2   0.3% ?? /usr/src/debug////////glibc-2.17-c758a686/string/../sysdeps/x86_64/multiarch/strcmp-sse42.S:206
+       2   0.3%  98.5%        2   0.3% ?? /usr/src/debug////////glibc-2.17-c758a686/string/../sysdeps/x86_64/multiarch/strcmp-sse42.S:1733
+       2   0.3%  98.8%        2   0.3% ?? /usr/src/debug////////glibc-2.17-c758a686/string/../sysdeps/x86_64/multiarch/strcmp-sse42.S:1734
+       2   0.3%  99.1%        2   0.3% __random
+       1   0.2%  99.3%        1   0.2% ?? /usr/src/debug/glibc-2.17-c758a686/stdlib/random.c:297
+       1   0.2%  99.5%        1   0.2% ?? /usr/src/debug////////glibc-2.17-c758a686/string/../sysdeps/x86_64/multiarch/strcmp-sse42.S:164
+       1   0.2%  99.7%        1   0.2% ?? /usr/src/debug////////glibc-2.17-c758a686/string/../sysdeps/x86_64/multiarch/strcmp-sse42.S:205
+       1   0.2%  99.8%        1   0.2% ?? /usr/src/debug////////glibc-2.17-c758a686/string/../sysdeps/x86_64/multiarch/strcmp-sse42.S:212
+       1   0.2% 100.0%        4   0.7% main
+       0   0.0% 100.0%      583  99.3% ?? /usr/src/debug////////glibc-2.17-c758a686/misc/../sysdeps/unix/sysv/linux/x86_64/clone.S:118
+       0   0.0% 100.0%        4   0.7% __libc_start_main
+       0   0.0% 100.0%        4   0.7% _start
+       0   0.0% 100.0%        3   0.5% rand_r
+       0   0.0% 100.0%      583  99.3% start_thread
+ROUTINE ====================== thread_worker in /u/eng/class/classlte/Project_2B/lab2_list.c
+   526    583 Total samples (flat / cumulative)
+     .      .   32: unsigned int get_key(const char* key) {
+     .      .   33: 	int tempp = *key;
+     .      .   34: 	return tempp % list_num;
+     .      .   35: }
+     .      .   36: 
+---
+     .      .   37: void* thread_worker(void* arg){
+     .      .   38: 	long long thread_time = 0;
+     .      .   39: 	struct timespec start;
+     .      .   40: 	struct timespec end;
+     .      .   41: 	SortedListElement_t* elements = arg;
+     .      .   42: 	/* Inserts pre-defined eelements into global/partitioned list */
+     .      .   43: 	for(int y = 0; y < iterations; y++){
+     .      .   44: 		unsigned int sub_list = get_key((elements+y)->key);
+     .      .   45: //		printf("This is the value of sub_list: %d\n",sub_list);
+     .      .   46: 		if(syn == true){
+     .      .   47: 			clock_gettime(CLOCK_MONOTONIC, &start);
+     .      .   48: 		}
+     .      .   49: 		if(sync_type == 'm'){
+     .      .   50:                 	pthread_mutex_lock(mutex + sub_list);
+     .      .   51:         	}
+     .      .   52:         	else if(sync_type == 's'){
+   369    369   53:                 	while(__sync_lock_test_and_set(lock + sub_list, 1));
+     .      .   54:         	}
+     .      .   55: 		if(syn == true){
+     .      .   56: 			clock_gettime(CLOCK_MONOTONIC, &end);	
+     .      .   57: 		}
+     .      .   58: 		thread_time += 1000000000 * (end.tv_sec - start.tv_sec) + (end.tv_nsec - start.tv_nsec);
+     .     38   59: 		SortedList_insert(head + sub_list, (SortedListElement_t *) (elements+y));
+     .      .   60: 		if(sync_type == 'm'){
+     .      .   61:                 	pthread_mutex_unlock(mutex + sub_list);
+     .      .   62:         	}
+     .      .   63:         	else if(sync_type == 's'){
+     .      .   64:                 	__sync_lock_release(lock + sub_list);
+     .      .   65:         	}
+     .      .   66: 	} 
+     .      .   67: //	printf("MADE IT PAST INSERTION PHASE GREAT JOB HUMA \n");
+     .      .   68: 	/* Get list length */
+     .      .   69: 	int list_length = 0;
+     .      .   70: 	for(unsigned int i = 0; i < list_num; i++){
+     .      .   71: 		if(syn == true){
+     .      .   72: 			clock_gettime(CLOCK_MONOTONIC, &start);
+     .      .   73: 		}
+     .      .   74: 		if(sync_type == 'm'){
+     .      .   75:                		 pthread_mutex_lock(mutex + i);
+     .      .   76:         	}
+     .      .   77:         	else if(sync_type == 's'){
+     .      .   78:                 	while(__sync_lock_test_and_set(lock + i, 1));
+     .      .   79:         	}
+     .      .   80: 		if(syn == true){
+     .      .   81: 			clock_gettime(CLOCK_MONOTONIC, &end);
+     .      .   82: 		}
+     .      .   83: 		thread_time += 1000000000 * (end.tv_sec - start.tv_sec) + (end.tv_nsec - start.tv_nsec);
+     .      .   84: 		list_length += SortedList_length(head + i);
+     .      .   85: 		if(list_length == -1 ){
+     .      .   86: 				fprintf(stderr, "Error obtaining list length: list may be corrupt \n");
+     .      .   87: 				exit(2);
+     .      .   88: 			
+     .      .   89: 		}
+     .      .   90: 		if(sync_type == 'm'){
+     .      .   91:                 	pthread_mutex_unlock(mutex + i);
+     .      .   92:         	}
+     .      .   93:         	else if(sync_type == 's'){
+     .      .   94:                		 __sync_lock_release(lock + i);
+     .      .   95:         	}
+     .      .   96: 	}
+     .      .   97: //	printf("MADE IT PAST LOOK UP PHASE GREAT JOB HUMAN \n");
+     .      .   98: 	/* Look up and delete each of keys previously inserted */
+     .      .   99: 	char *temp_key = malloc(sizeof(char)*256);
+     .      .  100: 	for(int i = 0; i < iterations; i++){
+     .      .  101: 	       unsigned int sub_list = get_key((elements+i)->key);
+     .      .  102: 		if(syn == true){
+     .      .  103: 			clock_gettime(CLOCK_MONOTONIC, &start);
+     .      .  104: 		}
+     .      .  105: 		if(sync_type == 'm'){
+     .      .  106:                 	pthread_mutex_lock(mutex + sub_list);
+     .      .  107:         	}
+     .      .  108:         	else if(sync_type == 's'){
+   157    157  109:                 	while(__sync_lock_test_and_set(lock + sub_list, 1));
+     .      .  110:         	}
+     .      .  111: 		if(syn == true){
+     .      .  112:                 	clock_gettime(CLOCK_MONOTONIC, &end);
+     .      .  113:         	}
+     .      .  114: 		thread_time += 1000000000 * (end.tv_sec - start.tv_sec) + (end.tv_nsec - start.tv_nsec);
+     .      .  115: 		strcpy(temp_key, (elements+i)->key);
+     .     19  116: 		SortedListElement_t* prev_inserted = SortedList_lookup(head + sub_list, temp_key);
+     .      .  117: 		if(prev_inserted == NULL){
+     .      .  118: 			fprintf(stderr, "Failure to find element \n");
+     .      .  119: 			exit(2);
+     .      .  120: 		}
+     .      .  121: 		if(SortedList_delete(prev_inserted) == 1){
+     .      .  122: 			fprintf(stderr, "Failure to delete element \n");
+     .      .  123: 			exit(2);
+     .      .  124: 
+     .      .  125: 		}
+     .      .  126: 		if(sync_type == 'm'){
+     .      .  127:                 	pthread_mutex_unlock(mutex + sub_list);
+     .      .  128:         	}
+     .      .  129:         	else if(sync_type == 's'){
+     .      .  130:                 	__sync_lock_release(lock + sub_list);
+     .      .  131:         	}
+     .      .  132: 	}
+     .      .  133: 	/* Releasing locks if neccessary */
+     .      .  134: 	return (void*) thread_time;
+     .      .  135: }
+---
+     .      .  136: 
+     .      .  137: void segHandler(int sig){
+     .      .  138: 	fprintf(stderr, "A segmentation fault was caught: %d\n", sig);
+     .      .  139: 	exit(2);
+     .      .  140: }
+ROUTINE ====================== thread_worker in /u/eng/class/classlte/Project_2B/lab2_list.c
+   526    583 Total samples (flat / cumulative)
+     .      .   32: unsigned int get_key(const char* key) {
+     .      .   33: 	int tempp = *key;
+     .      .   34: 	return tempp % list_num;
+     .      .   35: }
+     .      .   36: 
+---
+     .      .   37: void* thread_worker(void* arg){
+     .      .   38: 	long long thread_time = 0;
+     .      .   39: 	struct timespec start;
+     .      .   40: 	struct timespec end;
+     .      .   41: 	SortedListElement_t* elements = arg;
+     .      .   42: 	/* Inserts pre-defined eelements into global/partitioned list */
+     .      .   43: 	for(int y = 0; y < iterations; y++){
+     .      .   44: 		unsigned int sub_list = get_key((elements+y)->key);
+     .      .   45: //		printf("This is the value of sub_list: %d\n",sub_list);
+     .      .   46: 		if(syn == true){
+     .      .   47: 			clock_gettime(CLOCK_MONOTONIC, &start);
+     .      .   48: 		}
+     .      .   49: 		if(sync_type == 'm'){
+     .      .   50:                 	pthread_mutex_lock(mutex + sub_list);
+     .      .   51:         	}
+     .      .   52:         	else if(sync_type == 's'){
+   369    369   53:                 	while(__sync_lock_test_and_set(lock + sub_list, 1));
+     .      .   54:         	}
+     .      .   55: 		if(syn == true){
+     .      .   56: 			clock_gettime(CLOCK_MONOTONIC, &end);	
+     .      .   57: 		}
+     .      .   58: 		thread_time += 1000000000 * (end.tv_sec - start.tv_sec) + (end.tv_nsec - start.tv_nsec);
+     .     38   59: 		SortedList_insert(head + sub_list, (SortedListElement_t *) (elements+y));
+     .      .   60: 		if(sync_type == 'm'){
+     .      .   61:                 	pthread_mutex_unlock(mutex + sub_list);
+     .      .   62:         	}
+     .      .   63:         	else if(sync_type == 's'){
+     .      .   64:                 	__sync_lock_release(lock + sub_list);
+     .      .   65:         	}
+     .      .   66: 	} 
+     .      .   67: //	printf("MADE IT PAST INSERTION PHASE GREAT JOB HUMA \n");
+     .      .   68: 	/* Get list length */
+     .      .   69: 	int list_length = 0;
+     .      .   70: 	for(unsigned int i = 0; i < list_num; i++){
+     .      .   71: 		if(syn == true){
+     .      .   72: 			clock_gettime(CLOCK_MONOTONIC, &start);
+     .      .   73: 		}
+     .      .   74: 		if(sync_type == 'm'){
+     .      .   75:                		 pthread_mutex_lock(mutex + i);
+     .      .   76:         	}
+     .      .   77:         	else if(sync_type == 's'){
+     .      .   78:                 	while(__sync_lock_test_and_set(lock + i, 1));
+     .      .   79:         	}
+     .      .   80: 		if(syn == true){
+     .      .   81: 			clock_gettime(CLOCK_MONOTONIC, &end);
+     .      .   82: 		}
+     .      .   83: 		thread_time += 1000000000 * (end.tv_sec - start.tv_sec) + (end.tv_nsec - start.tv_nsec);
+     .      .   84: 		list_length += SortedList_length(head + i);
+     .      .   85: 		if(list_length == -1 ){
+     .      .   86: 				fprintf(stderr, "Error obtaining list length: list may be corrupt \n");
+     .      .   87: 				exit(2);
+     .      .   88: 			
+     .      .   89: 		}
+     .      .   90: 		if(sync_type == 'm'){
+     .      .   91:                 	pthread_mutex_unlock(mutex + i);
+     .      .   92:         	}
+     .      .   93:         	else if(sync_type == 's'){
+     .      .   94:                		 __sync_lock_release(lock + i);
+     .      .   95:         	}
+     .      .   96: 	}
+     .      .   97: //	printf("MADE IT PAST LOOK UP PHASE GREAT JOB HUMAN \n");
+     .      .   98: 	/* Look up and delete each of keys previously inserted */
+     .      .   99: 	char *temp_key = malloc(sizeof(char)*256);
+     .      .  100: 	for(int i = 0; i < iterations; i++){
+     .      .  101: 	       unsigned int sub_list = get_key((elements+i)->key);
+     .      .  102: 		if(syn == true){
+     .      .  103: 			clock_gettime(CLOCK_MONOTONIC, &start);
+     .      .  104: 		}
+     .      .  105: 		if(sync_type == 'm'){
+     .      .  106:                 	pthread_mutex_lock(mutex + sub_list);
+     .      .  107:         	}
+     .      .  108:         	else if(sync_type == 's'){
+   157    157  109:                 	while(__sync_lock_test_and_set(lock + sub_list, 1));
+     .      .  110:         	}
+     .      .  111: 		if(syn == true){
+     .      .  112:                 	clock_gettime(CLOCK_MONOTONIC, &end);
+     .      .  113:         	}
+     .      .  114: 		thread_time += 1000000000 * (end.tv_sec - start.tv_sec) + (end.tv_nsec - start.tv_nsec);
+     .      .  115: 		strcpy(temp_key, (elements+i)->key);
+     .     19  116: 		SortedListElement_t* prev_inserted = SortedList_lookup(head + sub_list, temp_key);
+     .      .  117: 		if(prev_inserted == NULL){
+     .      .  118: 			fprintf(stderr, "Failure to find element \n");
+     .      .  119: 			exit(2);
+     .      .  120: 		}
+     .      .  121: 		if(SortedList_delete(prev_inserted) == 1){
+     .      .  122: 			fprintf(stderr, "Failure to delete element \n");
+     .      .  123: 			exit(2);
+     .      .  124: 
+     .      .  125: 		}
+     .      .  126: 		if(sync_type == 'm'){
+     .      .  127:                 	pthread_mutex_unlock(mutex + sub_list);
+     .      .  128:         	}
+     .      .  129:         	else if(sync_type == 's'){
+     .      .  130:                 	__sync_lock_release(lock + sub_list);
+     .      .  131:         	}
+     .      .  132: 	}
+     .      .  133: 	/* Releasing locks if neccessary */
+     .      .  134: 	return (void*) thread_time;
+     .      .  135: }
+---
+     .      .  136: 
+     .      .  137: void segHandler(int sig){
+     .      .  138: 	fprintf(stderr, "A segmentation fault was caught: %d\n", sig);
+     .      .  139: 	exit(2);
+     .      .  140: }

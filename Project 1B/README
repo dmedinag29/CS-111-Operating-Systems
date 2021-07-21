@@ -1,0 +1,26 @@
+NAME: Daniel Medina Garate
+EMAIL: dmedinag@g.ucla.edu
+ID: 204971333
+
+SLIPDAYS: 6
+
+Files included in submission lab1b-204971333.tar.gz:
+
+        lab1b-client.c - Source code for project 1B written in C. Establishes a connection to the server using the --port=#### which is mandatory. Copies from stdin to stdout, but file descriptors are modified to be character-at-a-time and no-scho mode 		      (non-canonical input more with no echo). Also sends input to server which then process the commands and sends the output back. The source code supports the following:
+
+                --port= ... number used to esstablish connection
+		--compress ... compresses data sent over network, as well as decompresses data recieved
+		--log= ... will create specifed file to track the size of bytes and log bytes sent and received over network
+
+	lab1b-server.c - Source code for porject 1B written in C. Listens and establishes connection with server, receives data and sends it to child process that runs bash using pipes. Results of commands are then sent to parent process which sends them back to the client. The source code supports the following:
+
+		--port= ... number used to establish connection
+		--compress ... compresses data sent over network, as well as decompresses data received
+	
+	 Makefile - Will support the following targets:
+                default ... build lab1b-client and lab1b-server executables with -Wall, -Wextra, and -lz
+                clean ... reverts additions created by Makefile
+                dist ... creates our submission tar file
+		server ... builds lab1b-server executable with -Wall, -Wextra, and -lz
+		client ... builds lab1b-client executable with -Wall, -Wextra, and -lz
+

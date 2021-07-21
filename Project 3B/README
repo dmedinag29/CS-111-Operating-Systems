@@ -1,0 +1,16 @@
+NAME: Daniel Medina Garate
+EMAIL: dmedinag@g.ucla.edu
+ID: 204971333
+
+SLIPDAYS: 4
+
+Files included in submission lab3b-204971333.tar.gz:
+	
+	lab3b.py - Python shell script that takes in a CSV file regarding EXT2 file system details and anaylzes it for any inconsistencies
+
+	Makefile - Will support the following targets:
+		default ... builds lab3b.py by creating an executable link called lab3b
+		clean ... revers additions created by Makefile
+		dist ... creats our submission tar file 
+	
+	README - This file

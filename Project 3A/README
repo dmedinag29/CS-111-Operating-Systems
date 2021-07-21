@@ -1,0 +1,15 @@
+NAME: Daniel Medina Garate
+EMAIL: dmedinag@g.ucla.edu
+ID: 204971333
+
+SLIPDAYS: 2
+
+Files included in submission lab3a-204971333.tar.gz:
+
+	lab3a.c - Source code for project 3A written in C. Takes in a file as an argument and processes and prints
+	all file system properties of the file system in csv format.
+
+	 Makefile - Will support the following targets:
+                default ... build lab3a executable with -Wall and -Wextra
+                clean ... reverts additions created my Makefile
+                dist ... creates our submission tar file

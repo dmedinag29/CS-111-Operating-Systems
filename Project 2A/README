@@ -1,0 +1,101 @@
+NAME: Daniel Medina Garate
+EMAIL: dmedinag@g.ucla.edu
+ID: 204971333
+
+SLIPDAYS: 5
+
+Files included in submission lab2a-204971333.tar.gz:
+
+        lab2a_add.c - Source code for project 2A written in C (Part 1). Adds and subtracts 1 from a global varible for a certain # of --iterations and also allows
+		for use of mutliple --threads to carry out the work. Allows for yield option that increses the times we haev race conditions, as well
+		a --sync which enables race condition protection. (s - spinlock, m - mutex lock, c - compare and swap lock).  
+
+        lab2_list.c - Source code forr project 2A written in C (Part 2). Similar to first part, but instead adds/looks up/removes elements from a global
+		      linked list for a certain # of --iterations and also allows for use of multple --threads. Allows a number of combination of 
+		       --yield options that increases frequency of race conditions. (l - look up yield, d - delete yield, i - insert yield). Also 
+		       has implementation of race conditon protections using --sync (m - mutex lock, s - spin lock).
+	
+	SortedList.h - Header file provided that provides layout of sorted linked list implmenttion
+	
+	SortedList.c - Implementation of sorted linked list written in C, sllows for look up, insert, deletion, and list length functions.
+
+	lab2_add.csv - Data for test cases found in Makefile for part 1
+	
+	lab2_list.csv - Data for test cases found in Makefile for part 2 
+
+	lab2_add.gp - Uses gnu plot and csv file from part 1 to create 5 graphs
+			lab2_add-1.png: graph of threads and iterations that run without failure
+			lab2_add-2.png: graph of the average time per operation with and without yields
+			lab2_add-3.png: graph of operatoin cost per single threaded operation vs. the number of iterations
+			lab2_add-4.png: graph of the threads and iterations that can run without failure with yields and diffrent sync options
+			lab2_add-5.png: average time per protected operation vs. the number of threads
+	
+	lab2_list.gp - Uses gnu plot and csv file from part 2 to create 4 graphs
+			lab2_list-1.png: graph of cost operation vs. number of iterations for list
+			lab2_list-2.png: graph of the threads and iterations that run without failure 
+			lab2_list-3.png: graph of protected iterations that can run without failure w/ diffrent yield options 
+			lab2_list-4.png: graph of the cost per operation vs. the number of threads for different protections
+			
+        Makefile - Will support the following targets:
+                default ... build lab1a executable with -Wall and -Wextra
+                clean ... reverts additions created ny Makefile
+                dist ... creates our submission tar file
+		graphs ... creats graphs using data from CSV files
+
+QUESTION 2.1.1 - causing conflicts:
+		It takes many iterations before errors are seen because the work our 
+		thread is doing not much, so it is able to do it before it's designated 
+		time slice is up and is interupted. Since it is able to complete it's 
+		tasks without being interupted, then the posibility of a race case doesn't exsist.
+	
+		A significantly smaller number of iterations so seldom fails for the same reason.
+		The smaller the iterations, the less time a thread needs to complete its work 
+		which may allow it to finish it's tasks before a time slice interrupt occurs.
+
+QUESTION 2.1.2 - cost of yielding:
+		Yield runs are much slower because this means that we addtionally call sched_yield()
+		which switches control to another thread than the one currently working.
+
+		The extra time is going to context switching between threads, everything must be
+		saved/restored when switching. Additonally the OS has to decide which thread to 
+		schdule next.
+
+	
+		We can't get a valid per-operation timing because we don't know how much time is
+		spent on switching threads. This is something that would be hard to measure and keep
+		track per thread.
+
+QUESTION 2.1.3 - measurement errors:
+		The average cost per operation drops with the increasing number of iterations
+		because for the most part, iterations are very quick since we are just adding a 
+		number. Because of this, increasing the number of iterations will make our avaerge
+		cost smaller as it will make up for the slowdown from context switching which 
+		still remains the same. time_per_op = run_time/operations.
+
+		The cost seems to decrease quite quickly. It is almost safe to say as iterations
+		increase, the cost decreases exponentially. So we can keep increase iterations 
+		until we see that the cost of operation level down enough to what we desire.
+
+QUESTION 2.1.4 - costs of serialization:
+		 For a low number of threads, there isn't many context switch overheads compared to
+		 a large number of threads. Similarly with less threads our code won't have to run
+		 through the locks as much as if we had many threads.
+
+		 As the number of threads rises, we will have more overhead from context switching.
+		 We will also pend more time locking and unlocking parts of our code since with 
+		 more threads there is more posibilites for race conditions between threads.
+
+QUESTION 2.2.1 - scalability of Mutex
+		The time per mutex-protected operation vs. the number of threads in part 1 is linear until eventually it levels out. Here an 
+		increasing number of threads leads to an increase in cost, until it levels out as the add operations are constant after. In part 2,
+		the increased number of threads seemed to keep the cost at a constant  rate. This is because the threads are all competing for the same
+		lock, so haveing a few threads or many threads has the same cost as they will all be waiting their turn with the lock. This may also be 	       the case because once a lock is obtained, a thread will hold it longer which will lead us to less context swithcing and thus not
+		leading to an increase in cost of operations.
+
+QUESTION 2.2.2 - scalability of spin locks
+		Comparing the spin lock vs. mutex, we can see in the list graph that they both start off with similar costs. As more threads are added
+		the mutex loxk will have a smaller cost compared to the spin-lock. This is because once we have many threads, the CPU will waste time 
+		"spinning", which is a waste of resource. In comparison, the mutex lock puts the thread to sleep until it can processed thus saving 
+		processing resources as it waits for the lock to be free. This isn't very evident in part 1, but this is because in part 1 our 
+		operations were very simple so the threads did not have to wait very long for the spin-lock to become free. It is clear that the
+		mutex lock is less costly and scales better if we have more complex workloads within our threads. 

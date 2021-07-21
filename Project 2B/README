@@ -1,0 +1,62 @@
+NAME: Daniel Medina Garate
+EMAIL: dmedinag@g.ucla.edu
+ID: 204971333
+
+SLIPDAYS: 5
+
+Files included in submission lab2b-204971333.tar.gz:
+
+        lab2_list.c - Source code for project 2B written in C. Adds/looks up/removes elements from a global linked list. Allows option to use sub lists to increase throughput
+		      time using --lists. Similarly, allows for a certain # of --iterations and also allows for use of multple --threads. Allows a number of combination of
+                       --yield options that increases frequency of race conditions. (l - look up yield, d - delete yield, i - insert yield). Also
+                       has implementation of race conditon protections using --sync (m - mutex lock, s - spin lock).
+
+        SortedList.h - Header file provided that provides layout of sorted linked list implmenttion
+
+        SortedList.c - Implementation of sorted linked list written in C, sllows for look up, insert, deletion, and list length functions.
+
+        lab2b_list.csv - Data for test cases found in Makefile
+
+        lab2_list.gp - Uses gnu plot and csv file to create 5 graphs
+                        lab2_1.png: graph of cost throughput vs. number of threads
+                        lab2_2.png: graph of wait time for mutex lock vs avg time/operations
+                        lab2_3.png: graph of successful iterations vs threads for portected/unprotected runs
+                        lab2_4.png: graph of throughput vs threads for mutex partitioned lists
+			lab2_5.png: graph of throughput vs threads for spin lock partitioned lists
+
+        Makefile - Will support the following targets:
+                default ... build lab1a executable with -Wall and -Wextra
+                clean ... reverts additions created ny Makefile
+                dist ... creates our submission tar file
+                graphs ... creats graphs using data from CSV files
+		profile ... calls on profiling tool
+		tests ... runs test cases needed for the CSV data file
+	
+	profile.out - file that stores results of profile target. Uses google pprof tool to check which function, and then 
+		      which lines within the function use the most CPU.
+
+QUESTION 2.3.1 - Cycles in the basic list implementation:
+	For the 1 and 2 thread list tests, I believe that most of the cycles are spent in attempting to run the critical section of our code.
+	I believe that this is the most expensive part of the code because the bulk of our program in the 1 and 2 thread test consists of the insert and lookup/delete
+	for loops that we have in our code. Note that locks arn't very expensive until we have lots of threads, as for only one or two threads will not require much 
+	lock acquiring. For the high-thread spin-lock tests most of the time is spent in the spin-lock while loop, as threads have to wait until the lock is released and just 
+	spin until they can proceed. For the high-thread mutex-lock case most of the time is spent not necessarily in acquiring the lock as locks are put to sleep when they wait,
+	but performing the many context-switches that are needed.
+
+QUESTION 2.3.2 - Execution Profiling:
+	The lines of code that consume the most CPU are the spin lock while loops when exectuing our program with a high number of threads. This operation becomes very expensive, as
+	when we have more threads, we will have more competition for the shared resource thus more threads will be stuck in the lock while loop. Our program waste alot of CPU simply 
+	running in the while loop waiting for another thread to release the lock.
+	
+QUESTION 2.3.3 - Mutex Wait Time
+	The average lock-wait time rises so dramatically with the number of contending threads because the more threads there are, the more threads have to wait to be able to access the 
+	shared resource. At the beginning there isn't much wait time since there are only one or two threads, so they don't have to wait much at all to be able to continue. The completion 
+	time per operation rises less dramitacally because at least one thread will performing operations while the others wait, causing the thread to still make some progress and 
+	thus keeping the time per operatoin from rising dramatically. The reason why wait time per operation goes up faster is because we added up all the thread's waiting time, even though
+	these threads are waiting simultaneously. 
+
+QUESTION 2.3.4 - Performance of Partitioned Lists
+	If we have more lists, we have more throughput. This is because thrads don't have to wait for a the list to become free longer, becasue we have more lists! Thus, our threads are 
+	able to perform more work instead of waiting so much for locks to become free like in previous tests. The throughput should increase up to the certain point where each of our threads 
+	has its own sub_list. After that, incrementing the amount of lists should have no affect on throughput, unless we increased the number of threads. The throughput for a N-way partitioned 
+	list should be the samw as the troughput of a single list with fewer than (1/N) threads. This can be seen a bit in both graph 4 and 5.
